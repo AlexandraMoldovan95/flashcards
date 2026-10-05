@@ -1,0 +1,14 @@
+# Internal process docs — kept locally for reference, not published to the public repo
+CLAUDE.md
+QA_agent.md
+WORKFLOW.md
+preview-redesign-v3.html
+preview-notebook-gamification.html
+Claude outputs/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
