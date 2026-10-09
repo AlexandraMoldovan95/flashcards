@@ -12,3 +12,6 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+
+# Local Netlify folder
+.netlify
