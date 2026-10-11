@@ -927,6 +927,26 @@
     color: var(--color-text-muted);
   }
 
+  .ai-demo-btn {
+    margin-bottom: 6px;
+  }
+  .ai-demo-hint {
+    margin-bottom: 16px;
+  }
+  .ai-demo-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    border: 1px solid var(--color-primary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+
   .api-key-input-row {
     display: flex;
     gap: 8px;
@@ -1308,6 +1328,12 @@
           later (search) — in addition to the category/tags you choose below.
         </p>
 
+        <button type="button" class="toolbar-btn ai-demo-btn" id="try-ai-demo-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.6 4.8L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.2L12 3z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2z"/></svg>
+          Try the demo (no API key needed)
+        </button>
+        <p class="ai-section-hint ai-demo-hint">Loads a short sample document and generates cards from it instantly — no key, no real model call, so you can see how the feature works.</p>
+
         <form id="ai-generate-form" class="ai-form">
           <div>
             <label for="ai-file-input">Source document (.pdf, .txt, .md)</label>
@@ -1354,6 +1380,7 @@
       <div class="ai-section hidden" id="ai-preview-section">
         <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="4.5" width="12" height="16" rx="1.5"/><path d="M9 4.5V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1.5M9 10h6M9 13.5h6M9 17h4"/></svg> Review before adding</h3>
         <p class="ai-section-hint">Uncheck or edit anything you don't want to keep — nothing is added to your collection until you press "Add checked cards".</p>
+        <div class="ai-demo-banner hidden" id="ai-demo-banner">🧪 Demo mode — generated from a built-in sample document, not a live Anthropic call.</div>
         <ul class="ai-preview-list" id="ai-preview-list"></ul>
         <div class="ai-preview-actions">
           <button type="button" class="confirm-ai-btn" id="confirm-ai-btn">Add checked cards</button>
@@ -2448,6 +2475,37 @@
   // dependencies architecture.
   const AI_ACCEPTED_EXTENSIONS = [".pdf", ".txt", ".md"];
 
+  // ---------- Demo mode (no API key, no real model call) ----------
+  // A recruiter looking at the portfolio won't paste in their own Anthropic
+  // key just to see this feature work. "Try the demo" loads a short built-in
+  // document and shows a pre-written set of cards through the exact same
+  // preview/confirm UI as a real generation — clearly labelled as a demo
+  // (see the #ai-demo-banner toggle in showAiPreview) so it's never mistaken
+  // for a live result.
+  const DEMO_DOC_TEXT = `Manual QA Testing: Core Concepts
+
+Quality assurance (QA) testing checks that software behaves the way it's supposed to before it reaches real users. A tester's job isn't just clicking around - it's comparing actual behavior against expected behavior, and writing down exactly what happened when they don't match.
+
+A test case is the basic unit of manual testing. It names a precondition (what state the app must be in before starting), the exact steps to follow, and the expected result. A good test case is specific enough that two different testers running it would reach the same pass/fail verdict.
+
+Smoke testing is a quick pass over the most critical paths of an application - login, checkout, the core feature - run right after a new build to catch anything badly broken before deeper testing starts. Regression testing re-runs existing test cases after a code change, to catch cases where a fix for one thing broke something else that used to work. Exploratory testing has no fixed script: the tester actively investigates the app, following their own judgment and curiosity to find issues a written test case wouldn't think to check.
+
+A bug report needs four things to be useful to a developer: the steps to reproduce it, what actually happened, what was expected to happen instead, and the environment it was found in (browser, OS, app version). Severity describes how bad the bug is on its own - does it crash the app, or just look slightly off? Priority describes how soon it needs fixing, which depends on severity but also on things like how many users are affected and whether a release is close. A low-severity bug can still be high-priority - for example a typo in a company's name on the homepage right before a product launch.
+
+Acceptance criteria are the conditions a feature must satisfy to be considered "done." Testing against acceptance criteria is how a tester checks that what was built actually matches what was asked for, not just that it doesn't crash.`;
+
+  const DEMO_CARD_PAIRS = [
+    { question: "What is the basic unit of manual testing, and what three things does it name?", answer: "A test case - it names a precondition, the exact steps to follow, and the expected result." },
+    { question: "What makes a test case “good”, according to the text?", answer: "It's specific enough that two different testers running it would reach the same pass/fail verdict." },
+    { question: "What is smoke testing, and when is it run?", answer: "A quick pass over an application's most critical paths (e.g. login, checkout, the core feature), run right after a new build to catch anything badly broken before deeper testing starts." },
+    { question: "What does regression testing check for?", answer: "It re-runs existing test cases after a code change, to catch cases where a fix for one thing broke something else that used to work." },
+    { question: "How does exploratory testing differ from scripted testing?", answer: "It has no fixed script - the tester actively investigates the app using their own judgment and curiosity to find issues a written test case wouldn't think to check." },
+    { question: "What four things does a useful bug report need?", answer: "Steps to reproduce it, what actually happened, what was expected to happen instead, and the environment it was found in (browser, OS, app version)." },
+    { question: "What's the difference between severity and priority?", answer: "Severity describes how bad the bug is on its own (e.g. does it crash the app); priority describes how soon it needs fixing, which depends on severity plus factors like how many users are affected." },
+    { question: "Give the text's example of a low-severity bug that's still high-priority.", answer: "A typo in a company's name on the homepage right before a product launch." },
+    { question: "What are acceptance criteria used for?", answer: "The conditions a feature must satisfy to be considered “done” - testing against them checks that what was built actually matches what was asked for, not just that it doesn't crash." },
+  ];
+
   const anthropicKeyInputEl = document.getElementById("anthropic-key-input");
   const saveKeyBtnEl = document.getElementById("save-key-btn");
   const apiKeyStatusEl = document.getElementById("api-key-status");
@@ -2468,6 +2526,8 @@
   const aiPreviewListEl = document.getElementById("ai-preview-list");
   const confirmAiBtnEl = document.getElementById("confirm-ai-btn");
   const discardAiBtnEl = document.getElementById("discard-ai-btn");
+  const tryAiDemoBtnEl = document.getElementById("try-ai-demo-btn");
+  const aiDemoBannerEl = document.getElementById("ai-demo-banner");
 
   function loadApiKeys() {
     try {
@@ -2753,9 +2813,33 @@ Respond STRICTLY with a valid JSON array, with no explanatory text before or aft
     }
   });
 
-  function showAiPreview(pairs, category, extraTags) {
+  // ---------- Demo mode handler ----------
+  // Loads the built-in sample document into the form (purely so the form
+  // reflects what's "generating from"), then shows the pre-written card set
+  // after a short simulated delay instead of calling the real API. Reuses
+  // the exact same preview/confirm UI as a real generation.
+  tryAiDemoBtnEl.addEventListener("click", () => {
+    hideAiError();
+    hideAiPreview();
+    clearSelectedFile();
+    aiPastedTextEl.value = DEMO_DOC_TEXT;
+    aiQuestionCountEl.value = DEMO_CARD_PAIRS.length;
+    const category = aiCategoryInputEl.value.trim() || "QA Fundamentals (demo)";
+    const extraTags = parseTagsInput(aiTagsInputEl.value);
+
+    setGeneratingState(true);
+    tryAiDemoBtnEl.disabled = true;
+    window.setTimeout(() => {
+      setGeneratingState(false);
+      tryAiDemoBtnEl.disabled = false;
+      showAiPreview(DEMO_CARD_PAIRS, category, extraTags, true);
+    }, 700);
+  });
+
+  function showAiPreview(pairs, category, extraTags, isDemo = false) {
     state.aiPreviewCategory = category;
     state.aiPreviewTags = extraTags;
+    aiDemoBannerEl.classList.toggle("hidden", !isDemo);
     aiPreviewListEl.innerHTML = pairs
       .map(
         (p) => `
@@ -2775,6 +2859,7 @@ Respond STRICTLY with a valid JSON array, with no explanatory text before or aft
   function hideAiPreview() {
     aiPreviewListEl.innerHTML = "";
     aiPreviewSectionEl.classList.add("hidden");
+    aiDemoBannerEl.classList.add("hidden");
   }
 
   confirmAiBtnEl.addEventListener("click", () => {
