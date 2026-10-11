@@ -2,7 +2,7 @@
 
 A single-file spaced-repetition flashcards app, built with plain HTML, CSS, and JavaScript — no frameworks, no build step, no backend.
 
-**[Live demo →](#)** *(update this link after deploying to Netlify)*
+**[Live demo →](https://flashcards-bedce5.netlify.app/)**
 
 ![Flashcards app screenshot](docs/screenshot.png)
 
