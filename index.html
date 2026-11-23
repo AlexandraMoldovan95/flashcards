@@ -1200,6 +1200,12 @@
     /* Pre-existing bug, caught only now via the QA gate's 320px test: the
        "Save key" button no longer fits next to the input on very narrow screens. */
     .api-key-input-row { flex-direction: column; align-items: stretch; }
+
+    /* On phones there is no empty margin beside the 640px column, so the
+       window-corner date landed on top of the "due today" pill. Here it
+       joins the normal flow instead, on its own line under the pill. */
+    .app-header { display: flex; flex-direction: column; align-items: center; }
+    .current-date { position: static; order: 1; margin-top: 8px; }
   }
 </style>
 </head>
