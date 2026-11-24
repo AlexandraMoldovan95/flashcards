@@ -874,7 +874,7 @@
     const progressFillEl = document.getElementById("quiz-progress-fill");
     if (progressFillEl) {
       const pct = state.quizQueue.length ? ((state.currentCardIndex + 1) / state.quizQueue.length) * 100 : 0;
-      progressFillEl.style.width = `${pct}%`;
+      progressFillEl.style.transform = `translateX(${pct - 100}%)`; // 0% done = fully left, 100% = in place
     }
   }
 

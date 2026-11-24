@@ -860,11 +860,16 @@
     overflow: hidden;
     margin-bottom: 8px;
   }
+  /* Full-width bar slid left by the part not done yet (renderCurrentQuizCard sets translateX);
+     the track's overflow:hidden clips it. Animating transform instead of width means the
+     browser doesn't recompute the layout on every frame, and the rounded end keeps its shape. */
   .quiz-progress-fill {
+    width: 100%;
     height: 100%;
     background: var(--color-primary-btn);
     border-radius: 999px;
-    transition: width 0.35s ease;
+    transform: translateX(-100%);
+    transition: transform 0.35s ease;
   }
   .grade-hard { background: var(--color-hard-btn); }
   .grade-ok { background: var(--color-ok-btn); }
