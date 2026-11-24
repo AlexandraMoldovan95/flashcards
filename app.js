@@ -140,6 +140,11 @@
   // normalizeCard keeps backward compatibility with cards saved before
   // categories/stats/tags/images existed: any missing field gets a safe
   // default, once, on read.
+  // Imported decks come from other people, so fields that end up in HTML are checked strictly:
+  // an image must be a real base64 data URL, a date must look like YYYY-MM-DD.
+  const DATA_IMAGE_RE = /^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+/]+=*$/;
+  const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
   function normalizeCard(card) {
     return {
       id: card.id || generateId(),
@@ -149,12 +154,12 @@
       tags: Array.isArray(card.tags)
         ? [...new Set(card.tags.map((t) => String(t).trim()).filter(Boolean))]
         : [],
-      image: typeof card.image === "string" && card.image.startsWith("data:image") ? card.image : null,
+      image: typeof card.image === "string" && DATA_IMAGE_RE.test(card.image) ? card.image : null,
       interval: typeof card.interval === "number" ? card.interval : 1,
       repetitionCount: typeof card.repetitionCount === "number" ? card.repetitionCount : 0,
       easeFactor: typeof card.easeFactor === "number" ? card.easeFactor : 2.5,
-      nextReviewDate: card.nextReviewDate || getTodayString(),
-      lastReviewed: card.lastReviewed || null,
+      nextReviewDate: typeof card.nextReviewDate === "string" && ISO_DATE_RE.test(card.nextReviewDate) ? card.nextReviewDate : getTodayString(),
+      lastReviewed: typeof card.lastReviewed === "string" && ISO_DATE_RE.test(card.lastReviewed) ? card.lastReviewed : null,
       hardCount: typeof card.hardCount === "number" ? card.hardCount : 0,
       okCount: typeof card.okCount === "number" ? card.okCount : 0,
       easyCount: typeof card.easyCount === "number" ? card.easyCount : 0,
@@ -192,10 +197,16 @@
     return `card-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
 
+  // Safe both as element text and inside attribute values (value="..."): & < > " ' all become
+  // entities. The old textContent -> innerHTML trick left quotes alone, so a quote in a card's
+  // text (e.g. from an imported deck) could break out of value="..." and add attributes.
   function escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
+    return String(text ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   function parseTagsInput(value) {
@@ -383,7 +394,7 @@
     return `
       <div class="card-list-content">
         <span class="card-list-category cat-soft-${getCategoryColorKey(card.category)}">${escapeHtml(card.category)}</span>
-        ${card.image ? `<img class="card-list-thumbnail" src="${card.image}" alt="">` : ""}
+        ${card.image ? `<img class="card-list-thumbnail" src="${escapeHtml(card.image)}" alt="">` : ""}
         <p class="card-list-question">${escapeHtml(card.question)}</p>
         <p class="card-list-answer">${escapeHtml(card.answer)}</p>
         ${
@@ -391,7 +402,7 @@
             ? `<div class="card-list-tags">${card.tags.map((t) => `<span class="tag-chip">${escapeHtml(t)}</span>`).join("")}</div>`
             : ""
         }
-        <p class="card-list-meta">Review: ${card.nextReviewDate} · Hard ${card.hardCount} · Ok ${card.okCount} · Easy ${card.easyCount}</p>
+        <p class="card-list-meta">Review: ${escapeHtml(card.nextReviewDate)} · Hard ${card.hardCount} · Ok ${card.okCount} · Easy ${card.easyCount}</p>
       </div>
       <div class="card-list-actions">
         <button class="edit-card-btn" data-id="${card.id}" aria-label="Edit card">✎</button>
@@ -410,7 +421,7 @@
         <div class="edit-image-row">
           ${
             card.image
-              ? `<img class="card-list-thumbnail" src="${card.image}" alt="">`
+              ? `<img class="card-list-thumbnail" src="${escapeHtml(card.image)}" alt="">`
               : '<span class="edit-no-image-label">No image</span>'
           }
           <label class="toolbar-btn edit-image-label">
