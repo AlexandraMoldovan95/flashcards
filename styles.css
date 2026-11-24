@@ -1,0 +1,1221 @@
+  :root {
+    /* "Paper & ink" palette: warm paper-like neutrals + a single accent
+       (dark teal, like ink) — deliberately NOT indigo/violet, to avoid the
+       generic "AI SaaS" visual signature. See README for the full
+       rationale and the WCAG contrast table. */
+    --color-bg: #f6f1e6;
+    --color-surface: #fffdf8;
+    --color-text: #2a231c;
+    --color-text-muted: #6e6255;
+    --color-border: #e2d8c4;
+
+    /* "Text/icon/link" role — adapts per theme for readability against
+       that theme's background. Do NOT use directly as a white-text button
+       background — see the "-btn" variants below. */
+    --color-primary: #2d6a63;
+    --color-hard: #b3261e;
+    --color-ok: #8f5b09;
+    --color-easy: #2f7a3f;
+
+    --color-badge-bg: #e8ede9;
+
+    /* "White-text button background" role — FIXED values, identical in
+       both themes on purpose (an action button keeps the same brand color
+       regardless of theme; separate from the "text" role above, which
+       needs to be lighter in dark mode to stay readable — the same color
+       can't serve both roles at AA contrast in every combination, checked
+       by calculation, not by eye). Not redefined in the dark-mode blocks —
+       intentional, not an oversight of the sync note below. */
+    --color-primary-btn: #2d6a63;
+    --color-primary-btn-hover: #234f4a;
+    --color-hard-btn: #b3261e;
+    --color-ok-btn: #8f5b09;
+    --color-easy-btn: #2f7a3f;
+
+    /* Faint per-theme tint for hover on destructive actions (e.g. delete
+       button) — replaces a fixed #fee2e2 that measured 2.69:1 on dark
+       backgrounds (checked by calculation). */
+    --color-hard-bg-soft: #f8e3e1;
+
+    /* 3 radius steps instead of one recycled 12px everywhere: sm for
+       buttons/inputs, md for cards/sections, lg for the Quiz flashcard. */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 22px;
+
+    /* 3 elevation levels instead of one shadow reused everywhere. */
+    --shadow-sm: 0 1px 3px rgba(42, 35, 28, 0.10);
+    --shadow-md: 0 6px 16px rgba(42, 35, 28, 0.12);
+    --shadow-lg: 0 16px 34px rgba(42, 35, 28, 0.18);
+
+    /* Type pairing: classic serif for headings/questions (evokes
+       paper/books), system sans for body/UI — zero external dependencies,
+       zero network requests. */
+    --font-heading: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    /* Per-category accent palette — 7 distinct colors, assigned
+       deterministically via a hash of the category name (see
+       getCategoryColorKey in JS). "-vivid" is FIXED (theme-invariant, like
+       -btn) and used ONLY as an accent/border, never with text on top — no
+       AA contrast requirement. "-soft" is theme-adaptive (redefined in the
+       dark blocks below) and used as a badge background WITH normal text
+       (--color-text) on top — contrast checked at 6.7:1-13.7:1 in both
+       themes, see README. */
+    --cat-sunflower-vivid: #f2b705;
+    --cat-corai-vivid: #ef6a3c;
+    --cat-menta-vivid: #1fa080;
+    --cat-cer-vivid: #2f8fd1;
+    --cat-magenta-vivid: #d9457e;
+    --cat-liliac-vivid: #8a63c9;
+    --cat-turcoaz-vivid: #1aa8a8;
+    --cat-sunflower-soft: #fdf0cc;
+    --cat-corai-soft: #fce3d6;
+    --cat-menta-soft: #d7ece2;
+    --cat-cer-soft: #dae9f1;
+    --cat-magenta-soft: #f8dce2;
+    --cat-liliac-soft: #eae1f0;
+    --cat-turcoaz-soft: #d6eeea;
+  }
+
+  /* Dark theme: follows the system preference by default, but the toggle
+     button in the header can force light/dark explicitly via the
+     data-theme attribute on <html>, which always takes priority.
+     IMPORTANT: the 3 theme variable blocks (:root, media query,
+     [data-theme="dark"]) must be kept identical by hand — this covers
+     bg/surface/text/border/primary/hard/ok/easy + hard-bg-soft, AND the
+     shadows (higher opacity here, suited to a dark background — shadows
+     ARE redefined per theme, unlike the "-btn" variables above and radius,
+     which stay fixed/undefined here on purpose — see the :root comment
+     for why). */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --color-bg: #1c1712;
+      --color-surface: #26201a;
+      --color-primary: #7fc4bd;
+      --color-text: #ece4d6;
+      --color-text-muted: #b0a493;
+      --color-border: #3a3129;
+      --color-hard: #e2685f;
+      --color-ok: #e3a640;
+      --color-easy: #6fc47f;
+      --color-badge-bg: #26332f;
+      --color-hard-bg-soft: #3a201d;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.45);
+      --shadow-lg: 0 16px 34px rgba(0, 0, 0, 0.55);
+      --cat-sunflower-soft: #5f4a14;
+      --cat-corai-soft: #5e3524;
+      --cat-menta-soft: #244437;
+      --cat-cer-soft: #293f4d;
+      --cat-magenta-soft: #582a36;
+      --cat-liliac-soft: #42334b;
+      --cat-turcoaz-soft: #234642;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --color-bg: #1c1712;
+    --color-surface: #26201a;
+    --color-primary: #7fc4bd;
+    --color-text: #ece4d6;
+    --color-text-muted: #b0a493;
+    --color-border: #3a3129;
+    --color-hard: #e2685f;
+    --color-ok: #e3a640;
+    --color-easy: #6fc47f;
+    --color-badge-bg: #26332f;
+    --color-hard-bg-soft: #3a201d;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 16px 34px rgba(0, 0, 0, 0.55);
+    --cat-sunflower-soft: #5f4a14;
+    --cat-corai-soft: #5e3524;
+    --cat-menta-soft: #244437;
+    --cat-cer-soft: #293f4d;
+    --cat-magenta-soft: #582a36;
+    --cat-liliac-soft: #42334b;
+    --cat-turcoaz-soft: #234642;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: background-color 0.15s, color 0.15s;
+  }
+
+  h1, h3 { font-family: var(--font-heading); font-weight: 400; }
+
+  .app-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  .app-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  /* Top corners of the actual viewport (not the centered 640px column) —
+     coins HUD on the left, theme toggle + date on the right, both anchored
+     to the window (position: fixed) so they stay in the real page corner
+     at any screen width, instead of the centered content column's corner. */
+  .coins-hud {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: fixed;
+    top: 16px;
+    left: 20px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    border-radius: 999px;
+    padding: 8px 14px 8px 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    z-index: 3;
+  }
+  .coins-hud svg { width: 16px; height: 16px; color: var(--cat-sunflower-vivid); }
+
+  .theme-toggle-btn {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    border-radius: 999px;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+  .theme-toggle-btn svg { width: 19px; height: 19px; color: var(--color-primary); }
+
+  .current-date {
+    position: fixed;
+    top: 68px;
+    right: 20px;
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    z-index: 2;
+  }
+
+  .app-header h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    font-size: 1.9rem;
+    letter-spacing: -0.01em;
+  }
+  .app-header h1 svg { width: 24px; height: 24px; color: var(--color-primary); flex-shrink: 0; }
+
+  /* One line under the title, so a first-time visitor knows what the app does. */
+  .app-subtitle {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+  }
+
+  /* "Due today" indicator — a flat pill using the category highlight
+     palette (corai), consistent with the rest of the badge system below. */
+  .dashboard-stat {
+    display: inline-block;
+    font-size: 0.92rem;
+    font-weight: 600;
+    background: var(--cat-corai-soft);
+    color: var(--color-text);
+    padding: 7px 18px;
+    border-radius: 999px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .tab-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .tab-btn.active {
+    background: var(--color-primary-btn);
+    color: white;
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: tabFadeIn 0.2s ease; }
+  @keyframes tabFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .manage-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .toolbar-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    text-align: center;
+  }
+
+  .toolbar-btn:hover { background: var(--color-bg); }
+  .toolbar-btn:active { transform: scale(0.97); }
+  .toolbar-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  .search-row { position: relative; margin-bottom: 14px; }
+
+  .search-row svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    color: var(--color-text-muted);
+    pointer-events: none;
+  }
+
+  .search-row input {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 0.95rem;
+    font-family: inherit;
+  }
+
+  .add-card-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .add-card-form input {
+    flex: 1;
+    min-width: 120px;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  input[type="checkbox"], input[type="radio"] {
+    accent-color: var(--color-primary);
+  }
+
+  .add-card-form input#category-input,
+  .add-card-form input#tags-input {
+    flex: 0 1 160px;
+  }
+
+  .add-card-form button[type="submit"] {
+    padding: 10px 18px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary-btn);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .add-card-form button[type="submit"]:hover { background: var(--color-primary-btn-hover); }
+
+  .image-field {
+    flex-basis: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .image-pick-label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  .image-preview-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .image-preview-wrap img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+  }
+
+  .image-preview-wrap button {
+    border: none;
+    background: transparent;
+    color: var(--color-hard);
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  .card-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    padding: 14px 16px 14px 14px;
+    gap: 12px;
+  }
+
+  .card-list-content { flex: 1; min-width: 0; }
+
+  /* Background is set inline from JS based on category (deterministic
+     hash → one of 7 "soft" colors). The fallback below (--color-badge-bg)
+     only shows if JS hasn't run yet. */
+  .card-list-category {
+    display: inline-block;
+    background: var(--color-badge-bg);
+    color: var(--color-text);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+  }
+
+  .card-list-thumbnail {
+    display: block;
+    width: 100%;
+    max-height: 140px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    margin: 6px 0;
+  }
+
+  .card-list-question { margin: 0 0 4px; font-weight: 600; }
+  .card-list-answer { margin: 0 0 4px; color: var(--color-text-muted); }
+  .card-list-meta { margin: 0; font-size: 0.8rem; color: var(--color-text-muted); }
+
+  .card-list-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 4px 0;
+  }
+
+  .tag-chip {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  .card-list-actions {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .edit-card-btn, .delete-card-btn {
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .edit-card-btn:hover { background: var(--color-badge-bg); color: var(--color-primary); }
+  .delete-card-btn:hover { background: var(--color-hard-bg-soft); color: var(--color-hard); }
+
+  .card-list-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .card-list-edit-form input {
+    padding: 8px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+
+  .edit-image-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 0.82rem;
+  }
+
+  .edit-image-row .card-list-thumbnail {
+    width: 56px;
+    height: 56px;
+    max-height: none;
+    margin: 0;
+  }
+
+  .edit-no-image-label { color: var(--color-text-muted); }
+
+  .remove-existing-image-btn {
+    border: none;
+    background: transparent;
+    color: var(--color-hard);
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+
+  .edit-actions { display: flex; gap: 8px; }
+
+  .edit-actions button {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+
+  .save-edit-btn { background: var(--color-primary-btn); color: white; }
+  .cancel-edit-btn { background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); }
+
+  .empty-state {
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: 20px 0;
+  }
+  .empty-state p { margin: 0 0 14px; }
+
+  /* Only shown on an empty deck: lets a visitor try the quiz in one click. */
+  .sample-deck-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary-btn);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .sample-deck-btn:hover { background: var(--color-primary-btn-hover); }
+  .sample-deck-btn:active { transform: scale(0.97); }
+
+  #quiz-start-view, #quiz-complete-view {
+    text-align: center;
+    padding: 32px 20px;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+  }
+
+  .quiz-complete-icon { color: var(--color-easy); margin-bottom: 8px; }
+  .quiz-complete-icon svg { width: 36px; height: 36px; }
+
+  #quiz-start-view button, #quiz-complete-view button {
+    margin-top: 16px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary-btn);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .quiz-mode-toggle {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+
+  .quiz-mode-toggle label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+
+  .category-filter {
+    margin-top: 18px;
+    text-align: left;
+  }
+
+  .category-filter-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin: 0 0 8px;
+  }
+
+  .category-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Category filter chips — flat pills, background set inline from JS
+     using the per-category "soft" palette color. */
+  .category-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Category "soft" backgrounds as classes (cat-soft-<key>), used by the card badge and the quiz
+     category chips. They were style="" attributes in the JS templates; as classes, the
+     Content-Security-Policy can forbid inline styles. Defined after both rules, so they win. */
+  .cat-soft-sunflower { background: var(--cat-sunflower-soft); }
+  .cat-soft-corai { background: var(--cat-corai-soft); }
+  .cat-soft-menta { background: var(--cat-menta-soft); }
+  .cat-soft-cer { background: var(--cat-cer-soft); }
+  .cat-soft-magenta { background: var(--cat-magenta-soft); }
+  .cat-soft-liliac { background: var(--cat-liliac-soft); }
+  .cat-soft-turcoaz { background: var(--cat-turcoaz-soft); }
+
+  .quiz-progress {
+    text-align: center;
+    color: var(--color-text-muted);
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+  }
+
+  .flashcard {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 40px 24px;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  /* Fundal setat inline din JS pe baza categoriei — vezi comentariul de la
+     .card-list-category. */
+  .flashcard-category {
+    display: inline-block;
+    background: var(--color-badge-bg);
+    color: var(--color-text);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    padding: 2px 10px;
+    border-radius: 999px;
+    margin: 0 0 12px;
+  }
+
+  .flashcard-image {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: var(--radius-md);
+    object-fit: contain;
+    margin-bottom: 14px;
+  }
+
+  .flashcard-question { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 600; margin: 0 0 12px; }
+
+  .flashcard-answer {
+    font-size: 1.05rem;
+    color: var(--color-primary);
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
+    width: 100%;
+    animation: fade-in 0.2s ease;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .user-answer-input {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+
+  .user-answer-input:disabled { opacity: 0.6; }
+
+  .answer-feedback {
+    margin: -4px 0 10px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid currentColor;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .answer-feedback-match { color: var(--color-easy); }
+  .answer-feedback-mismatch { color: var(--color-ok); }
+
+  /* Coins & Tips — paid hints. The hint renders in an element SEPARATE
+     from #flashcard-answer, so the confidentiality rule stays literally
+     true for the full answer — see the documented exception in README. */
+  .tips-panel { margin-bottom: 12px; }
+
+  .hint-box {
+    display: none;
+    margin-bottom: 10px;
+    padding: 10px 14px;
+    background: var(--cat-menta-soft);
+    border: 1px dashed var(--color-easy);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    letter-spacing: 0.06em;
+    font-size: 1rem;
+    text-align: center;
+  }
+  .hint-box.visible { display: block; }
+
+  .tip-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tip-btn {
+    flex: 1;
+    min-width: 100px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-primary-btn);
+    background: transparent;
+    color: var(--color-primary-btn);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .tip-btn svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--cat-sunflower-vivid); }
+  .tip-btn:hover:not(:disabled) { background: var(--color-badge-bg); }
+  .tip-btn:active:not(:disabled) { transform: scale(0.97); }
+  .tip-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    border-color: var(--color-text-muted);
+    color: var(--color-text-muted);
+  }
+  .tip-btn.hidden { display: none; }
+  .tip-btn:focus-visible,
+  .coins-hud:focus-visible,
+  .category-checkbox:focus-within {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  #show-answer-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary-btn);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  #show-answer-btn:active { transform: scale(0.98); }
+
+  .grade-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .grade-btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .grade-btn:hover { opacity: 0.85; }
+  .grade-btn:active { transform: scale(0.96); }
+
+  /* Fade + slight rise when the answer is revealed — an animation (not a
+     transition) so it still plays right after the element leaves
+     display:none, with no extra JS timing needed. */
+  @keyframes answerReveal {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .flashcard-answer:not(.hidden) { animation: answerReveal 0.3s ease; }
+
+  .quiz-progress-track {
+    height: 4px;
+    background: var(--color-border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .quiz-progress-fill {
+    height: 100%;
+    background: var(--color-primary-btn);
+    border-radius: 999px;
+    transition: width 0.35s ease;
+  }
+  .grade-hard { background: var(--color-hard-btn); }
+  .grade-ok { background: var(--color-ok-btn); }
+  .grade-easy { background: var(--color-easy-btn); }
+
+  .stats-summary {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stats-summary-item {
+    flex: 1;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stats-summary-item strong { display: block; font-size: 1.6rem; color: var(--color-primary); }
+  .stats-summary-item span { font-size: 0.8rem; color: var(--color-text-muted); }
+
+  #stats-content h3 {
+    font-size: 1rem;
+    margin: 24px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  #stats-content h3 svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--color-primary); }
+
+  #stats-content h3:first-of-type { margin-top: 0; }
+
+  .stat-card-list, .stat-category-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .stat-card-item, .stat-category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .stat-card-question { font-weight: 600; }
+  .stat-card-meta, .stat-category-rate {
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .stat-category-name { font-weight: 600; }
+
+  .hidden { display: none !important; }
+
+  .ai-section {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+
+  .ai-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 4px;
+    font-size: 1.05rem;
+  }
+  .ai-section h3 svg { width: 18px; height: 18px; color: var(--color-primary); flex-shrink: 0; }
+
+  .ai-section-hint {
+    margin: 0 0 14px;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+  }
+
+  .ai-demo-btn {
+    margin-bottom: 6px;
+  }
+  .ai-demo-hint {
+    margin-bottom: 16px;
+  }
+  .ai-demo-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    border: 1px solid var(--color-primary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+
+  .api-key-input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .api-key-input-row input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+
+  .api-key-input-row button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary-btn);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .api-key-status {
+    margin: 10px 0 0;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+  }
+
+  .clear-key-btn { margin-top: 8px; }
+
+  .ai-form { display: flex; flex-direction: column; gap: 10px; }
+
+  .ai-form label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .ai-form input[type="text"],
+  .ai-form input[type="number"],
+  .ai-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+
+  .ai-form textarea { min-height: 90px; resize: vertical; }
+
+  .ai-form-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .ai-form-row > div { flex: 1; min-width: 140px; }
+
+  .ai-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 26px 16px;
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .ai-dropzone:hover,
+  .ai-dropzone:focus-visible {
+    border-color: var(--color-primary);
+    outline: none;
+  }
+
+  .ai-dropzone.ai-dropzone-active {
+    border-color: var(--color-primary);
+    background: var(--color-badge-bg);
+  }
+
+  .ai-dropzone.hidden { display: none; }
+
+  .ai-dropzone-icon { display: block; margin: 0 auto; }
+  .ai-dropzone-icon svg { width: 28px; height: 28px; color: var(--color-text-muted); }
+
+  .ai-dropzone-text {
+    margin: 2px 0 0;
+    font-size: 0.9rem;
+    color: var(--color-text);
+  }
+
+  .ai-dropzone-link {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .ai-dropzone-hint {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+  }
+
+  .ai-file-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+  }
+
+  .ai-file-chip-icon svg { width: 17px; height: 17px; color: var(--color-text-muted); flex-shrink: 0; }
+
+  .ai-file-chip .ai-file-name {
+    flex: 1;
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: 0.88rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .remove-ai-file-btn {
+    flex: 0 0 auto;
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 0.95rem;
+    padding: 2px 8px;
+    border-radius: 8px;
+  }
+
+  .remove-ai-file-btn:hover {
+    background: var(--color-badge-bg);
+    color: var(--color-hard);
+  }
+
+  #generate-ai-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary-btn);
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  #generate-ai-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  #generate-ai-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .ai-error {
+    background: var(--color-surface);
+    color: var(--color-hard);
+    border: 1px solid var(--color-hard);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .ai-preview-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ai-preview-item {
+    display: flex;
+    gap: 10px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+  }
+
+  .ai-preview-item input[type="checkbox"] { margin-top: 10px; }
+
+  .ai-preview-fields { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+  .ai-preview-fields input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+
+  .ai-preview-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .ai-preview-actions button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .confirm-ai-btn { background: var(--color-easy-btn); color: white; }
+  .discard-ai-btn { background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); }
+
+  @media (max-width: 480px) {
+    .add-card-form { flex-direction: column; }
+    .add-card-form input#category-input,
+    .add-card-form input#tags-input { flex: 1 1 auto; }
+
+    /* Pre-existing bug, caught only now via the QA gate's 320px test: the
+       "Save key" button no longer fits next to the input on very narrow screens. */
+    .api-key-input-row { flex-direction: column; align-items: stretch; }
+
+    /* On phones there is no empty margin beside the 640px column, so the
+       window-corner date landed on top of the "due today" pill. Here it
+       joins the normal flow instead, on its own line under the pill. */
+    .app-header { display: flex; flex-direction: column; align-items: center; }
+    .current-date { position: static; order: 1; margin-top: 8px; }
+  }

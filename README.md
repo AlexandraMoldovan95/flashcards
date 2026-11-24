@@ -1,6 +1,6 @@
 # Flashcards
 
-A single-file spaced-repetition flashcards app, built with plain HTML, CSS, and JavaScript — no frameworks, no build step, no backend.
+A spaced-repetition flashcards app built with plain HTML, CSS, and JavaScript — three static files, no frameworks, no build step, no backend.
 
 **[Live demo →](https://flashcards-bedce5.netlify.app/)**
 
@@ -10,7 +10,7 @@ A single-file spaced-repetition flashcards app, built with plain HTML, CSS, and 
 
 Most flashcard apps either lock your data behind an account, or are over-engineered for what is fundamentally a simple problem: show a question, hide the answer, let the learner grade their own recall, and use that grade to decide when to show the card again. This project is an exercise in building that loop well — a real spaced-repetition scheduler, a thoughtful visual design, and a few small ideas (hint-buying with earned coins, AI-assisted card generation) layered on top without compromising the core mechanic.
 
-Everything lives in **one HTML file**. There is nothing to install and nothing to configure — open `index.html` in a browser and the app runs.
+Everything lives in **three static files** (`index.html`, `styles.css`, `app.js`). There is nothing to install and nothing to configure — open `index.html` in a browser and the app runs.
 
 ## Features
 
@@ -57,13 +57,16 @@ A few decisions worth calling out, for anyone skimming this as a portfolio piece
 - **The category color palette is deterministic, not stored.** Each category's color is derived from a hash of its name, computed at render time. This means the data model never has to store or migrate a "color" field, and two devices with the same categories always render them identically.
 - **The spaced-repetition answer is never in the DOM before you ask for it.** Clicking "Show Answer" is what writes the answer into the page — it isn't just hidden with CSS beforehand. This was a conscious choice so the quiz can't be "cheated" by inspecting the page before you've committed to an answer. The one deliberate, documented exception is the hint system: a hint is derived from the answer and rendered in a separate element, but it's never a 100% reveal.
 - **"All cards" practice mode has an anti-farming rule.** Free practice intentionally doesn't touch your spaced-repetition schedule the same way a "due" review does, and a card only earns coins once per calendar day in that mode — otherwise you could regrade the same card in a loop for infinite coins.
+- **A strict Content-Security-Policy, so no inline code.** The app used to be a single HTML file with inline CSS and JavaScript. It was split into three files so `netlify.toml` can send a CSP that allows scripts and styles only from the site's own files and network requests only to the site and the Anthropic API. Because the API key is kept in the browser, that limits what an injected script could run or where it could send the key.
 - **The color system passes WCAG AA contrast** in both light and dark mode, verified by calculation rather than by eye. Button backgrounds and button text intentionally use separate CSS variables, because no single color satisfies both "readable as text" and "readable as a button background" at the same time.
 
 ## Project structure
 
 ```
-index.html       — the entire application
-netlify.toml      — Netlify deploy configuration
+index.html        — the page markup
+styles.css        — all styles (light and dark theme)
+app.js            — the application logic (state, scheduler, rendering)
+netlify.toml      — Netlify deploy configuration and security headers
 LICENSE
 README.md
 ```

@@ -1,9 +1,14 @@
 [build]
   publish = "."
 
+# Content-Security-Policy: the browser runs scripts and styles only from this site's own files
+# (no inline code), shows images from the site or as data: URLs (card images are stored that way),
+# and talks only to this site and the Anthropic API (AI card generation with the user's own key).
+# That limits what an injected script could do with the API key kept in the browser.
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.anthropic.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
