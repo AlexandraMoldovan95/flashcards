@@ -243,6 +243,13 @@
   }
   .app-header h1 svg { width: 24px; height: 24px; color: var(--color-primary); flex-shrink: 0; }
 
+  /* One line under the title, so a first-time visitor knows what the app does. */
+  .app-subtitle {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+  }
+
   /* "Due today" indicator — a flat pill using the category highlight
      palette (corai), consistent with the rest of the badge system below. */
   .dashboard-stat {
@@ -570,6 +577,21 @@
     color: var(--color-text-muted);
     padding: 20px 0;
   }
+  .empty-state p { margin: 0 0 14px; }
+
+  /* Only shown on an empty deck: lets a visitor try the quiz in one click. */
+  .sample-deck-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary-btn);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .sample-deck-btn:hover { background: var(--color-primary-btn-hover); }
+  .sample-deck-btn:active { transform: scale(0.97); }
 
   #quiz-start-view, #quiz-complete-view {
     text-align: center;
@@ -1216,6 +1238,7 @@
       <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle light/dark theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5a8 8 0 1 1-9.3-10.4 6.3 6.3 0 0 0 9.3 10.4z"/></svg></button>
       <span class="current-date" id="current-date"></span>
       <h1><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5.5c2.2-1 4.8-1 7 0v13c-2.2-1-4.8-1-7 0v-13z"/><path d="M20 5.5c-2.2-1-4.8-1-7 0v13c2.2-1 4.8-1 7 0v-13z"/></svg> Flashcards</h1>
+      <p class="app-subtitle">Spaced-repetition flashcards. Your cards stay in this browser.</p>
       <div class="dashboard-stat" id="due-counter">0 cards due today</div>
     </header>
 
@@ -1693,6 +1716,28 @@
     });
   }
 
+  // A small starter deck for first-time visitors (offered only when the deck is empty).
+  // Two categories, so the category colors and the quiz category filter show up too.
+  const SAMPLE_DECK = [
+    { category: "Software testing", question: "What is a regression test?", answer: "A test that checks old features still work after a change" },
+    { category: "Software testing", question: "Severity vs. priority of a bug?", answer: "Severity is how bad the bug is; priority is how soon it must be fixed" },
+    { category: "Software testing", question: "What does a good bug report contain?", answer: "Steps to reproduce, expected result, actual result, environment" },
+    { category: "Software testing", question: "What is a smoke test?", answer: "A quick check that the most important features work at all" },
+    { category: "Software testing", question: "What is boundary value analysis?", answer: "Testing at the edges of an input range, like 0, 1, max and max + 1" },
+    { category: "Web basics", question: "What does HTTP status 404 mean?", answer: "Not Found" },
+    { category: "Web basics", question: "What does HTTP status 500 mean?", answer: "Internal Server Error" },
+    { category: "Web basics", question: "Where does this app save your cards?", answer: "In your browser's localStorage" },
+  ];
+
+  function loadSampleDeck() {
+    // Guard: never mix the sample into (or over) a deck the user already has.
+    if (state.cards.length > 0) return;
+    // createCard → same defaults and normalization as a hand-made card; all due today.
+    state.cards = SAMPLE_DECK.map((c) => createCard(c.question, c.answer, c.category, ["sample"], null));
+    saveCards(state.cards);
+    renderAll();
+  }
+
   // ---------- Step 4: Interval logic (Hard / Ok / Easy) ----------
   // Simplified variant of the SM-2 algorithm — a didactic approximation, not SM-2 "by the book".
   function evaluateCard(card, grade) {
@@ -1823,7 +1868,10 @@
     const visibleCards = getVisibleCards();
 
     if (state.cards.length === 0) {
-      cardListEl.innerHTML = "<li class=\"empty-state\">You don't have any cards yet. Add one above.</li>";
+      cardListEl.innerHTML = `<li class="empty-state">
+        <p>You don't have any cards yet. Add one above, or try a sample deck.</p>
+        <button type="button" class="sample-deck-btn" id="load-sample-btn">Load sample deck (${SAMPLE_DECK.length} cards)</button>
+      </li>`;
       return;
     }
 
@@ -1923,6 +1971,11 @@
   // A single delegated listener for all list actions: delete,
   // enter/exit edit mode, save, remove image.
   cardListEl.addEventListener("click", (event) => {
+    if (event.target.closest("#load-sample-btn")) {
+      loadSampleDeck();
+      return;
+    }
+
     const deleteBtn = event.target.closest(".delete-card-btn");
     if (deleteBtn) {
       state.cards = state.cards.filter((card) => card.id !== deleteBtn.dataset.id);

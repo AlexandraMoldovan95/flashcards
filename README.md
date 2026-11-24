@@ -21,6 +21,7 @@ Everything lives in **one HTML file**. There is nothing to install and nothing t
 - **Coins & hints.** Grading a card correctly earns coins, which can be spent on three progressively more revealing hints before you give up and look at the answer. It's a small nudge toward active recall instead of passive flipping.
 - **Stats.** See your best- and worst-known cards and your success rate per category, computed from your own grading history — no hidden scoring.
 - **AI card generation (bring your own API key).** Paste text, or drop a `.pdf`/`.txt`/`.md` file, and generate a batch of question/answer pairs with Claude. Nothing is added to your deck until you review and confirm each card. Your API key is stored only in your browser's local storage and is never included in exports.
+- **Sample deck.** On an empty deck, one click loads 8 sample cards (software testing and web basics), so you can try the quiz right away.
 - **Import / export.** Your full deck (and coin balance) exports to a single JSON file you can back up or move between devices.
 - **Light and dark mode**, following your system preference by default, with a manual override.
 - **Fully local.** Everything — cards, images, settings, coins, your API key — stays in the browser's local storage. There is no server and no account.
