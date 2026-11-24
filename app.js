@@ -1053,17 +1053,17 @@
         <div class="stats-summary-item"><strong>${reviewedCards.length}</strong><span>reviewed</span></div>
       </div>
 
-      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg> Best known</h3>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg> Best known</h2>
       <ul class="stat-card-list">${bestCards.map(renderCardStatItem).join("")}</ul>
 
-      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4.5l8.5 14.5H3.5L12 4.5z"/><path d="M12 10v4.2M12 17h.01"/></svg> Needs work</h3>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4.5l8.5 14.5H3.5L12 4.5z"/><path d="M12 10v4.2M12 17h.01"/></svg> Needs work</h2>
       ${
         worstCards.length > 0
           ? `<ul class="stat-card-list">${worstCards.map(renderCardStatItem).join("")}</ul>`
           : '<p class="empty-state">No difficult questions right now.</p>'
       }
 
-      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V10M10 19V5M16 19v-7M20 19H3"/></svg> Categories, best to worst</h3>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V10M10 19V5M16 19v-7M20 19H3"/></svg> Categories, best to worst</h2>
       <ul class="stat-category-list">${categoryStats.map(renderCategoryRow).join("")}</ul>
     `;
   }

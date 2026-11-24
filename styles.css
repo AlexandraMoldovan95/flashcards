@@ -148,7 +148,9 @@
     transition: background-color 0.15s, color 0.15s;
   }
 
-  h1, h3 { font-family: var(--font-heading); font-weight: 400; }
+  /* Section titles are h2 (right after the page's h1, no skipped level for screen readers);
+     they were h3 before, which is why their look is set by the rules below, not by the tag. */
+  h1, h2 { font-family: var(--font-heading); font-weight: 400; }
 
   .app-container {
     max-width: 640px;
@@ -886,7 +888,7 @@
   .stats-summary-item strong { display: block; font-size: 1.6rem; color: var(--color-primary); }
   .stats-summary-item span { font-size: 0.8rem; color: var(--color-text-muted); }
 
-  #stats-content h3 {
+  #stats-content h2 {
     font-size: 1rem;
     margin: 24px 0 10px;
     display: flex;
@@ -894,9 +896,9 @@
     gap: 7px;
   }
 
-  #stats-content h3 svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--color-primary); }
+  #stats-content h2 svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--color-primary); }
 
-  #stats-content h3:first-of-type { margin-top: 0; }
+  #stats-content h2:first-of-type { margin-top: 0; }
 
   .stat-card-list, .stat-category-list {
     list-style: none;
@@ -938,14 +940,14 @@
     margin-bottom: 18px;
   }
 
-  .ai-section h3 {
+  .ai-section h2 {
     display: flex;
     align-items: center;
     gap: 8px;
     margin: 0 0 4px;
     font-size: 1.05rem;
   }
-  .ai-section h3 svg { width: 18px; height: 18px; color: var(--color-primary); flex-shrink: 0; }
+  .ai-section h2 svg { width: 18px; height: 18px; color: var(--color-primary); flex-shrink: 0; }
 
   .ai-section-hint {
     margin: 0 0 14px;
