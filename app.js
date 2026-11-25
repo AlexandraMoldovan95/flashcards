@@ -903,6 +903,10 @@
   // thinking counts toward max_tokens, so the limit leaves room for it on top of up to
   // 30 cards. It's a ceiling, not a price: only the tokens actually used are billed.
   const AI_MAX_TOKENS = 16000;
+  // How long to wait for the whole reply before giving up. Up to 30 cards plus thinking can
+  // legitimately take a few minutes (the reply arrives in one piece); without a limit, a
+  // stuck request would leave the button on "Generating..." for good.
+  const AI_TIMEOUT_MS = 5 * 60 * 1000;
   // Accepted extensions for the source document. .doc/.docx are
   // intentionally not supported: .docx is a DEFLATE-compressed ZIP+XML
   // archive, and old .doc is a binary OLE format — both would need an
@@ -1187,6 +1191,7 @@ Respond STRICTLY with a valid JSON array, with no explanatory text before or aft
           "anthropic-dangerous-direct-browser-access": "true",
         },
         body: JSON.stringify({ model: AI_MODEL, max_tokens: AI_MAX_TOKENS, messages: [{ role: "user", content: contentBlocks }] }),
+        signal: AbortSignal.timeout(AI_TIMEOUT_MS),   // also covers reading the body below
       });
       const data = await response.json();
       if (!response.ok) {
@@ -1220,6 +1225,10 @@ Respond STRICTLY with a valid JSON array, with no explanatory text before or aft
       showAiPreview(pairs, category, extraTags);
     } catch (err) {
       console.error(err);
+      if (err && err.name === "TimeoutError") {
+        showAiError(`Error: Claude didn't answer within ${AI_TIMEOUT_MS / 60000} minutes, so the request was stopped. Try again, or ask for fewer questions or use a shorter document.`);
+        return;   // the finally block still resets the button
+      }
       // The CORS suffix only makes sense for real network failures
       // (fetch rejected before any response arrives) — otherwise it's
       // confusing to show it for logic errors too (e.g. missing text,
