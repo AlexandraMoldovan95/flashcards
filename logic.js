@@ -268,6 +268,19 @@
       .filter((item) => item.question && item.answer);
   }
 
+  // The message to show when the AI's reply stopped before it was complete, or null when it
+  // finished normally. A cut-off JSON array can't be read, so without this the user would
+  // only see "could not parse the response".
+  function aiStopProblem(stopReason) {
+    if (stopReason === "max_tokens") {
+      return "The AI's reply was cut off at its length limit before it finished, so no cards could be read. Try fewer questions or a shorter source";
+    }
+    if (stopReason === "refusal") {
+      return "The AI declined to create cards from this material";
+    }
+    return null;
+  }
+
 // In Node (the tests) `module` exists and the functions are exported; in the browser it doesn't,
 // so this is skipped and the functions above stay plain globals for app.js.
 if (typeof module !== "undefined" && module.exports) {
@@ -275,5 +288,6 @@ if (typeof module !== "undefined" && module.exports) {
     CATEGORY_PALETTE_KEYS, getCategoryColorKey, buildHintForLevel, normalizeCard,
     formatDate, getTodayString, generateId, escapeHtml, parseTagsInput, normalizeAnswerForCompare,
     evaluateCard, getDueCards, getCategories, computeCategoryStats, extractQuestionAnswerPairs,
+    aiStopProblem,
   };
 }

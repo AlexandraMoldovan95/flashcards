@@ -4,7 +4,7 @@
 // Run:  node --test tests/
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { extractQuestionAnswerPairs: read } = require("../logic.js");
+const { extractQuestionAnswerPairs: read, aiStopProblem } = require("../logic.js");
 
 const TWO = [{ question: "What is a test case?", answer: "Steps with an expected result." },
              { question: "What does SRS stand for?", answer: "Spaced repetition system." }];
@@ -60,4 +60,23 @@ test("not JSON at all, or JSON that isn't a list, gives nothing usable", () => {
 test("diacritics and other languages come through unchanged", () => {
   const ro = [{ question: "Ce înseamnă „regresie”?", answer: "Ceva ce mergea și s-a stricat." }];
   assert.deepEqual(read(JSON.stringify(ro)), ro);
+});
+
+// ---------- why the reply stopped (aiStopProblem) ----------
+
+test("a reply cut off at the token limit gets its own message, not 'could not parse'", () => {
+  const msg = aiStopProblem("max_tokens");
+  assert.match(msg, /cut off at its length limit/);
+  assert.match(msg, /fewer questions or a shorter source/);
+  assert.ok(!msg.endsWith("."));   // the error box adds the full stop
+});
+
+test("a refusal gets its own message", () => {
+  assert.match(aiStopProblem("refusal"), /declined/);
+});
+
+test("a reply that finished normally is not a problem", () => {
+  for (const reason of ["end_turn", "stop_sequence", undefined, null]) {
+    assert.equal(aiStopProblem(reason), null);
+  }
 });

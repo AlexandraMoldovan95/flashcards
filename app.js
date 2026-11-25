@@ -899,6 +899,10 @@
   // see the hint in the "Generate Cards" section and CLAUDE.md for the
   // reasoning behind this decision.
   const AI_MODEL = "claude-sonnet-5";
+  // This model thinks before it answers (adaptive thinking is on by default) and the
+  // thinking counts toward max_tokens, so the limit leaves room for it on top of up to
+  // 30 cards. It's a ceiling, not a price: only the tokens actually used are billed.
+  const AI_MAX_TOKENS = 16000;
   // Accepted extensions for the source document. .doc/.docx are
   // intentionally not supported: .docx is a DEFLATE-compressed ZIP+XML
   // archive, and old .doc is a binary OLE format — both would need an
@@ -1182,12 +1186,19 @@ Respond STRICTLY with a valid JSON array, with no explanatory text before or aft
           "anthropic-version": "2023-06-01",
           "anthropic-dangerous-direct-browser-access": "true",
         },
-        body: JSON.stringify({ model: AI_MODEL, max_tokens: 4096, messages: [{ role: "user", content: contentBlocks }] }),
+        body: JSON.stringify({ model: AI_MODEL, max_tokens: AI_MAX_TOKENS, messages: [{ role: "user", content: contentBlocks }] }),
       });
       const data = await response.json();
       if (!response.ok) {
         const message = (data && data.error && data.error.message) || `HTTP error ${response.status}`;
         throw new Error(message);
+      }
+      // A reply cut off at the token limit, or refused, says so plainly (logic.js) instead
+      // of ending in "could not parse the response".
+      const stopProblem = aiStopProblem(data.stop_reason);
+      if (stopProblem) {
+        console.error("Anthropic reply stopped early:", data);
+        throw new Error(stopProblem);
       }
       // We don't assume the first content block is always text (the
       // response can contain other block types too, e.g. if the model
