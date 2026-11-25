@@ -1113,28 +1113,7 @@ Respond STRICTLY with a valid JSON array, with no explanatory text before or aft
 [{"question": "...", "answer": "..."}]`;
   }
 
-  function extractQuestionAnswerPairs(rawText) {
-    let jsonText = rawText.trim();
-    const fenceMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)```/i);
-    if (fenceMatch) jsonText = fenceMatch[1].trim();
-    let parsed;
-    try {
-      parsed = JSON.parse(jsonText);
-    } catch (err) {
-      const arrayMatch = jsonText.match(/\[[\s\S]*\]/);
-      if (!arrayMatch) return [];
-      try {
-        parsed = JSON.parse(arrayMatch[0]);
-      } catch (err2) {
-        return [];
-      }
-    }
-    if (!Array.isArray(parsed)) return [];
-    return parsed
-      .filter((item) => item && typeof item.question === "string" && typeof item.answer === "string")
-      .map((item) => ({ question: item.question.trim(), answer: item.answer.trim() }))
-      .filter((item) => item.question && item.answer);
-  }
+  // extractQuestionAnswerPairs() (reads the cards out of the AI's reply) is in logic.js, with tests.
 
   function setGeneratingState(isGenerating) {
     generateAiBtnEl.disabled = isGenerating;

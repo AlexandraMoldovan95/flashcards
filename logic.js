@@ -241,12 +241,39 @@
       .sort((a, b) => b.successRate - a.successRate);
   }
 
+  // Reads the Question/Answer pairs out of the AI's reply. The prompt asks for a bare JSON
+  // array, but a model may still wrap it in a ```json fence or add a sentence around it, so:
+  // fence first, then the whole text as JSON, then the first [...] found in it. Anything
+  // that isn't a list of {question, answer} strings is dropped; [] means "nothing usable".
+  function extractQuestionAnswerPairs(rawText) {
+    let jsonText = String(rawText || "").trim();
+    const fenceMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    if (fenceMatch) jsonText = fenceMatch[1].trim();
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch (err) {
+      const arrayMatch = jsonText.match(/\[[\s\S]*\]/);
+      if (!arrayMatch) return [];
+      try {
+        parsed = JSON.parse(arrayMatch[0]);
+      } catch (err2) {
+        return [];
+      }
+    }
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((item) => item && typeof item.question === "string" && typeof item.answer === "string")
+      .map((item) => ({ question: item.question.trim(), answer: item.answer.trim() }))
+      .filter((item) => item.question && item.answer);
+  }
+
 // In Node (the tests) `module` exists and the functions are exported; in the browser it doesn't,
 // so this is skipped and the functions above stay plain globals for app.js.
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     CATEGORY_PALETTE_KEYS, getCategoryColorKey, buildHintForLevel, normalizeCard,
     formatDate, getTodayString, generateId, escapeHtml, parseTagsInput, normalizeAnswerForCompare,
-    evaluateCard, getDueCards, getCategories, computeCategoryStats,
+    evaluateCard, getDueCards, getCategories, computeCategoryStats, extractQuestionAnswerPairs,
   };
 }

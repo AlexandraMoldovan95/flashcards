@@ -1,5 +1,5 @@
-# Runs the unit tests for logic.js (scheduler, hints, answer comparison, card validation)
-# on every push and pull request. Plain Node, no packages to install.
+# Runs the unit tests for logic.js (scheduler, hints, answer comparison, card validation,
+# reading the AI's reply) on every push and pull request. Plain Node, no packages to install.
 name: tests
 on: [push, pull_request]
 permissions:

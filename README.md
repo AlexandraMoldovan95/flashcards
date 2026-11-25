@@ -44,7 +44,7 @@ That's it. To use the AI card generation feature, you'll need your own [Anthropi
 node --test "tests/*.test.js"
 ```
 
-20 unit tests for `logic.js`, the part with no DOM: the scheduler (intervals, ease limits, dates across month and year ends), due cards, hints (never the whole answer, even for one-letter answers), answer comparison, card validation for imported decks, escaping, category colors and stats. They run in CI on every push. Writing them found two real bugs, both fixed: grading the same card Easy about 15 times in a row crashed the app (the interval grew past the largest date JavaScript can hold; intervals are now capped at 365 days), and very short answers were fully visible in the level-2 hint.
+29 unit tests for `logic.js`, the part with no DOM: the scheduler (intervals, ease limits, dates across month and year ends), due cards, hints (never the whole answer, even for one-letter answers), answer comparison, card validation for imported decks, escaping, category colors and stats, plus reading the cards out of the AI's reply (a fenced or wrapped JSON array, broken items, a reply cut off mid-array) in `tests/ai-reply.test.js`. They run in CI on every push. Writing them found two real bugs, both fixed: grading the same card Easy about 15 times in a row crashed the app (the interval grew past the largest date JavaScript can hold; intervals are now capped at 365 days), and very short answers were fully visible in the level-2 hint.
 
 ### Deploying
 
