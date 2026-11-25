@@ -163,6 +163,18 @@
     margin-bottom: 20px;
   }
 
+  /* Way back to the author's portfolio: small, centered above the title, between the
+     two fixed corner controls (they never overlap it, even at 320px). */
+  .portfolio-link {
+    display: inline-block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+  .portfolio-link:hover { color: var(--color-primary); text-decoration: underline; }
+  .portfolio-link:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: 4px; }
+
   /* Top corners of the actual viewport (not the centered 640px column) —
      coins HUD on the left, theme toggle + date on the right, both anchored
      to the window (position: fixed) so they stay in the real page corner
