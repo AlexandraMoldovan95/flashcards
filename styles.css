@@ -334,8 +334,10 @@
     flex-wrap: wrap;
   }
 
+  /* Two inputs per row (Question + Answer, then Category + Tags): with all four on one row,
+     Category and Tags were 160px wide and their placeholders were cut off. */
   .add-card-form input {
-    flex: 1;
+    flex: 1 1 calc(50% - 4px);
     min-width: 120px;
     padding: 10px 12px;
     border: 1px solid var(--color-border);
@@ -348,11 +350,6 @@
 
   input[type="checkbox"], input[type="radio"] {
     accent-color: var(--color-primary);
-  }
-
-  .add-card-form input#category-input,
-  .add-card-form input#tags-input {
-    flex: 0 1 160px;
   }
 
   .add-card-form button[type="submit"] {
