@@ -170,3 +170,16 @@ test("category stats: success rate, best first, unreviewed categories left out",
   const stats = L.computeCategoryStats(cards);
   assert.deepEqual(stats.map((s) => [s.category, s.successRate, s.total]), [["QA", 1, 4], ["Web", 0.5, 2]]);
 });
+
+test("back to top: hidden on a page shorter than two screens (few cards), however far it's scrolled", () => {
+  assert.equal(L.shouldShowToTop(0, 900, 900), false);
+  assert.equal(L.shouldShowToTop(700, 900, 1600), false);
+  assert.equal(L.shouldShowToTop(899, 900, 1799), false);
+});
+
+test("back to top: on a long page (many cards), only after half a screen of scrolling", () => {
+  assert.equal(L.shouldShowToTop(0, 900, 5000), false);
+  assert.equal(L.shouldShowToTop(449, 900, 5000), false);
+  assert.equal(L.shouldShowToTop(450, 900, 5000), true);
+  assert.equal(L.shouldShowToTop(422, 844, 1688), true);   // exactly two phone screens
+});

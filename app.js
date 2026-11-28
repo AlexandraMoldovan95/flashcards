@@ -1337,3 +1337,30 @@ Respond STRICTLY with a valid JSON array, with no explanatory text before or aft
   }
 
   init();
+
+  // ---------- Back to top ----------
+  // Shown only when the page is long enough to need it (shouldShowToTop in logic.js): checked on
+  // scroll, on resize, and whenever the page's height changes (cards added, generated, filtered,
+  // another tab). A click scrolls up (instantly with reduced motion) and puts keyboard focus on
+  // the first link, at the top.
+  (function setUpBackToTop() {
+    const btn = document.getElementById("to-top-btn");
+    if (!btn) return;
+    let queued = false;
+    const update = () => {
+      queued = false;
+      btn.classList.toggle("is-shown",
+        shouldShowToTop(window.scrollY, window.innerHeight, document.documentElement.scrollHeight));
+    };
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    if ("ResizeObserver" in window) new ResizeObserver(queue).observe(document.body);
+    btn.addEventListener("click", () => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+      const first = document.querySelector(".portfolio-link");
+      if (first) first.focus({ preventScroll: true });
+    });
+    update();
+  })();

@@ -281,6 +281,13 @@
     return null;
   }
 
+  // "Back to top" (the round button in the bottom-right corner): shown only when the page is at
+  // least two screens tall (a long card list, generated cards, the stats) and the reader has
+  // scrolled down at least half a screen. With few cards, or at the top, it would only be in the way.
+  function shouldShowToTop(scrollY, viewportHeight, pageHeight) {
+    return pageHeight >= viewportHeight * 2 && scrollY >= viewportHeight / 2;
+  }
+
 // In Node (the tests) `module` exists and the functions are exported; in the browser it doesn't,
 // so this is skipped and the functions above stay plain globals for app.js.
 if (typeof module !== "undefined" && module.exports) {
@@ -288,6 +295,6 @@ if (typeof module !== "undefined" && module.exports) {
     CATEGORY_PALETTE_KEYS, getCategoryColorKey, buildHintForLevel, normalizeCard,
     formatDate, getTodayString, generateId, escapeHtml, parseTagsInput, normalizeAnswerForCompare,
     evaluateCard, getDueCards, getCategories, computeCategoryStats, extractQuestionAnswerPairs,
-    aiStopProblem,
+    aiStopProblem, shouldShowToTop,
   };
 }
